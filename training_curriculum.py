@@ -4,24 +4,22 @@
 import wandb
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 
 # Choose the metric
-metrics = [
-    ("env_runners/custom_metrics/env/number_of_agents_mean",
-     "Number of Agents (Mean)"),
-
-    ("env_runners/custom_metrics/env/number_of_airports_mean",
-     "Number of Airports (Mean)"),
-
-    ("env_runners/custom_metrics/env/number_of_initial_cargo_mean",
-     "Number of Initial Cargo (Mean)"),
-
-    ("env_runners/custom_metrics/dynamic_cargo_generated_mean",
-     "Dynamic Cargo Generated (Mean)"),
-
-     ("env_runners/custom_metrics/env/malfunction_rate_mean",
-     "Malfunction Rate (Mean)"),
+# Single-metric plots (3 of them)
+single_metrics = [
+    ("env_runners/custom_metrics/env/number_of_agents_mean",  "Number of Agents (Mean)"),
+    ("env_runners/custom_metrics/env/number_of_airports_mean","Number of Airports (Mean)"),
+    ("env_runners/custom_metrics/env/malfunction_rate_mean",  "Malfunction Rate (Mean)"),
 ]
+
+# The two cargo metrics to combine into one subplot
+cargo_metrics = [
+    ("env_runners/custom_metrics/env/number_of_initial_cargo_mean", "Initial Cargo"),
+    ("env_runners/custom_metrics/dynamic_cargo_generated_mean",     "Dynamic Cargo"),
+]
+
 
 # Connect to wandb API
 api = wandb.Api()
@@ -51,37 +49,66 @@ def fetch_full(run, metric):
     )
     return df
 
-fig, axes = plt.subplots(3, 2, figsize=(14, 15), sharex=True)
+# --- layout: 2x2 (4 total plots) ---
+# --- layout: 2x2 (4 total plots) ---
+fig, axes = plt.subplots(2, 2, figsize=(14, 10), sharex=True)
 axes = axes.flatten()
 
-for ax, (metric_key, metric_label) in zip(axes, metrics):
+cargo_ax = axes[3]   # dedicate axis for cargo plot
+
+# 1) Plot the three single metrics
+for plot_ax, (metric_key, metric_label) in zip(axes[:3], single_metrics):
+    df_ctde = fetch_full(run1, metric_key)
+    df_gnn  = fetch_full(run2, metric_key)
+
+    plot_ax.plot(df_ctde["training_iteration"], df_ctde["value"],
+                 label="CTDE MAPPO", color="tab:blue")
+    plot_ax.plot(df_gnn["training_iteration"], df_gnn["value"],
+                 label="GNN-DRL", color="tab:orange")
+
+    plot_ax.set_title(metric_label)
+    plot_ax.set_ylabel(metric_label)
+    plot_ax.grid(True)
+    plot_ax.legend(loc="lower right")
+
+# 2) Combined cargo plot (4 legend items)
+for metric_key, short_label in cargo_metrics:
 
     df_ctde = fetch_full(run1, metric_key)
     df_gnn  = fetch_full(run2, metric_key)
 
-    ax.plot(df_ctde["training_iteration"], df_ctde["value"], label="CTDE MAPPO")
-    ax.plot(df_gnn["training_iteration"],  df_gnn["value"],  label="GNN-DRL")
+    is_dynamic = "dynamic" in metric_key.lower()
+    linestyle = "--" if is_dynamic else "-"
 
-    ax.set_title(metric_label)
-    ax.set_ylabel(metric_label)
-    ax.grid(True)
+    cargo_ax.plot(
+        df_ctde["training_iteration"], df_ctde["value"],
+        label=f"CTDE MAPPO – {short_label}",
+        color="tab:blue",
+        linestyle=linestyle
+    )
 
-df_ctde.to_csv("csv/ctde_curriculum.csv", index=False)
-df_gnn.to_csv("csv/gnn_curriculum.csv", index=False)
+    cargo_ax.plot(
+        df_gnn["training_iteration"], df_gnn["value"],
+        label=f"GNN-DRL – {short_label}",
+        color="tab:orange",
+        linestyle=linestyle
+    )
 
-# Make the plot
+cargo_ax.set_title("Cargo (Mean)")
+cargo_ax.set_ylabel("Cargo (Mean)")
+cargo_ax.grid(True)
+cargo_ax.legend(loc="best")
 
-# Common X label
-for ax in axes:
-    ax.set_xlabel("Training Iteration")
+# common x labels
+for plot_ax in axes:
+    plot_ax.set_xlabel("Training Iteration")
 
-# Single legend for entire figure
-handles, labels = axes[0].get_legend_handles_labels()
-fig.legend(handles, labels, loc="upper center", ncol=2)
+# put legend only on the cargo subplot (so it shows 4 items)
+cargo_ax.legend(loc="best")
 
 fig.suptitle("Curriculum Training Metrics vs Training Iteration", fontsize=16)
 fig.tight_layout(rect=[0, 0.03, 1, 0.95])
 
-# plt.show()
+fig.savefig("figs/curriculum_training_metrics.png", dpi=300, bbox_inches="tight")
+plt.close(fig)
 
-plt.savefig("figs/curriculum_training_metrics.png", dpi=300, bbox_inches="tight")

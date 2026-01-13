@@ -54,6 +54,7 @@ plt.title("Proportion of Deliveries Missed vs Training Iteration")
 plt.xlabel("Training Iteration")
 plt.ylabel("Proportion of Deliveries Missed (Mean)")
 plt.grid(True)
+plt.axhline(y=0.3, linestyle="--", linewidth=2, label="Target = 0.30", color="red")
 plt.legend()
 # plt.show()
 
