@@ -83,20 +83,20 @@ METRIC = "env_runners/custom_metrics/proportion_deliveries_missed_mean"
 
 RUNS = [
     {
-        "label": "CTDE MAPPO",
+        "label": "CTDE MAPPO - with curriculum",
         "path": "socallahan-air-force-institute-of-technology/new_thesis/34c3d_00000",
         "csv_out": "csv/ctde_missed.csv",
         "max_iterations": 2646,
     },
     {
-        "label": "GNN-DRL",
-        "path": "socallahan-air-force-institute-of-technology/new_thesis/e72f3_00000",
+        "label": "CTDE MAPPO - without curriculum",
+        "path": "socallahan-air-force-institute-of-technology/new_thesis/74b46_00000",
         "csv_out": "csv/gnn_missed.csv",
-        "max_iterations": 1363,
+        "max_iterations": 2646,
     },
 ]
 
-PLOT_OUT = "figs/proportion_deliveries_missed.png"
+PLOT_OUT = "figs/proportion_deliveries_missed_curr.png"
 TARGET = 0.30
 
 

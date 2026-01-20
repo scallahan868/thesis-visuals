@@ -3,8 +3,11 @@ import sys
 
 scripts = [
     "training_missed_deliveries.py",
+    "training_missed_deliveries_curr.py",
+    "training_iteration_time_curr.py",
     "training_curriculum.py",
     "training_iteration_time.py",
+    "training_iteration_time_with_agents.py",
 ]
 
 for script in scripts:

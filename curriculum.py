@@ -1242,9 +1242,14 @@ cargo_ax = axes[3]  # dedicate axis for cargo plot
 
 # 1) Plot the three single metrics
 for plot_ax, (metric_key, metric_label) in zip(axes[:3], single_metrics):
-    plot_ax.plot(df["test_case_id"], df[metric_key], color="tab:blue")
-    plot_ax.set_title(metric_label)
-    plot_ax.set_ylabel(metric_label)
+    plot_ax.plot(
+        df["test_case_id"],
+        df[metric_key],
+        color="tab:blue",
+        linewidth=3,
+    )
+    plot_ax.set_title(metric_label, fontsize=18)
+    plot_ax.set_ylabel(metric_label, fontsize=16)
     plot_ax.grid(True)
     plot_ax.set_xticks(df["test_case_id"][::5])
     plot_ax.tick_params(labelbottom=True)
@@ -1259,20 +1264,21 @@ for metric_key, short_label in cargo_metrics:
         df[metric_key],
         label=short_label,
         linestyle=linestyle,
+        linewidth=3,
     )
 
-cargo_ax.set_title("Cargo")
-cargo_ax.set_ylabel("Cargo Count")
+cargo_ax.set_title("Cargo", fontsize=18)
+cargo_ax.set_ylabel("Cargo Count", fontsize=16)
 cargo_ax.grid(True)
-cargo_ax.legend(loc="best")
+cargo_ax.legend(loc="best", fontsize=14)
 cargo_ax.set_xticks(df["test_case_id"][::5])
-cargo_ax.tick_params(labelbottom=True)
+cargo_ax.tick_params(labelbottom=True, labelsize=14)
 
 # common x labels
 for plot_ax in axes:
-    plot_ax.set_xlabel("Test Case ID")
+    plot_ax.set_xlabel("Test Case ID", fontsize=16)
 
-fig.suptitle("Curriculum Test Case Parameters", fontsize=16)
+fig.suptitle("Curriculum Test Case Parameters", fontsize=20)
 fig.tight_layout(rect=[0, 0.03, 1, 0.95])
 
 fig.savefig("figs/curriculum_test_cases.png", dpi=300, bbox_inches="tight")

@@ -90,21 +90,21 @@ TIME_METRIC = "timers/training_iteration_time_ms"
 
 RUNS = [
     {
-        "label": "CTDE MAPPO",
+        "label": "CTDE MAPPO - with curriculum",
         "path": "socallahan-air-force-institute-of-technology/new_thesis/34c3d_00000",
-        "csv_out": "csv/ctde_time.csv",
+        "csv_out": "csv/ctde_missed.csv",
         "max_iterations": 2646,
     },
     {
-        "label": "GNN-DRL",
-        "path": "socallahan-air-force-institute-of-technology/new_thesis/e72f3_00000",
-        "csv_out": "csv/gnn_time.csv",
-        "max_iterations": 1363,
+        "label": "CTDE MAPPO - without curriculum",
+        "path": "socallahan-air-force-institute-of-technology/new_thesis/74b46_00000",
+        "csv_out": "csv/gnn_missed.csv",
+        "max_iterations": 2646,
     },
 ]
 
-FIG_ITER_OUT = "figs/training_iteration_time_seconds.png"
-FIG_CUM_OUT = "figs/training_cumulative_time_hours.png"
+FIG_ITER_OUT = "figs/training_iteration_time_seconds_curr.png"
+FIG_CUM_OUT = "figs/training_cumulative_time_hours_curr.png"
 
 
 def ensure_parent_dir(path: str) -> None:
